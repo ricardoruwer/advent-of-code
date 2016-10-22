@@ -1,26 +1,22 @@
 class Word
-  PROHIBITED_STRINGS = ["ab", "cd", "pq", "xy"]
+  PROHIBITED_STRINGS = %w(ab cd pq xy)
 
   def initialize(input)
     @input = input
   end
 
   def count_nice_words_old_rule
-    total = 0
-    get_words.each do |word|
-      total += 1 if is_nice_using_old_rules(word)
+    get_words.reduce(0) do |total, word|
+      total += 1 if nice_using_old_rules?(word)
+      total
     end
-
-    total
   end
 
   def count_nice_words_new_rule
-    total = 0
-    get_words.each do |word|
-      total += 1 if is_nice_using_new_rules(word)
+    get_words.reduce(0) do |total, word|
+      total += 1 if nice_using_new_rules?(word)
+      total
     end
-
-    total
   end
 
   private
@@ -29,31 +25,31 @@ class Word
     @input.split("\n")
   end
 
-  def is_nice_using_old_rules(word)
-    has_at_least_three_vowels(word) && has_letters_appearing_twice(word) && has_no_prohibited_strings(word)
+  def nice_using_old_rules?(word)
+    at_least_three_vowels?(word) && letters_appearing_twice?(word) && no_prohibited_strings?(word)
   end
 
-  def is_nice_using_new_rules(word)
-    has_pair_of_letters_repeating(word) && has_one_letter_between_two_equals(word)
+  def nice_using_new_rules?(word)
+    pair_of_letters_repeating?(word) && one_letter_between_two_equals?(word)
   end
 
-  def has_at_least_three_vowels(word)
-    word.scan(/[aeoui]/).count >= 3
+  def at_least_three_vowels?(word)
+    word =~ /(.*[aeiou]){3}/
   end
 
-  def has_letters_appearing_twice(word)
+  def letters_appearing_twice?(word)
     word.match(/((.)\2+)/)
   end
 
-  def has_no_prohibited_strings(word)
+  def no_prohibited_strings?(word)
     word.match(/#{PROHIBITED_STRINGS.join("|")}/).nil?
   end
 
-  def has_pair_of_letters_repeating(word)
+  def pair_of_letters_repeating?(word)
     word.match(/(\w{2}).*?(\1)/)
   end
 
-  def has_one_letter_between_two_equals(word)
+  def one_letter_between_two_equals?(word)
     word.match(/(.).\1/)
   end
 end
