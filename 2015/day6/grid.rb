@@ -3,11 +3,11 @@ class Grid
     @input = input
   end
 
-  def count_lights_on
+  def number_of_lights_on
     @grid = Hash.new
 
     get_rules.each do |rule|
-      from, to = rule.scan(/\d{1,3}[,]\d{1,3}/)
+      from, to = get_directions(rule)
 
       if rule.start_with?("turn on")
         switch(from, to, true)
@@ -18,14 +18,14 @@ class Grid
       end
     end
 
-    @grid.select { |_,light| light == true }.size
+    @grid.values.count(true)
   end
 
   def brightness
     @grid = Hash.new
 
     get_rules.each do |rule|
-      from, to = rule.scan(/\d{1,3}[,]\d{1,3}/)
+      from, to = get_directions(rule)
 
       if rule.start_with?("turn on")
         change_brightness(from, to, "+1")
@@ -43,6 +43,10 @@ class Grid
 
   def get_rules
     @input.split("\n")
+  end
+
+  def get_directions(rule)
+    rule.scan(/\d{1,3}[,]\d{1,3}/)
   end
 
   def switch(from, to, status)
@@ -65,7 +69,7 @@ class Grid
         if @grid["#{line},#{column}"].nil?
           status = true
         else
-          status = (not @grid["#{line},#{column}"])
+          status = ! @grid["#{line},#{column}"]
         end
 
         @grid["#{line},#{column}"] = status
@@ -79,7 +83,7 @@ class Grid
 
     from_x.upto(to_x) do |line|
       from_y.upto(to_y) do |column|
-        if @grid["#{line},#{column}"].nil?
+        unless @grid["#{line},#{column}"]
           @grid["#{line},#{column}"] = 0
         end
 
