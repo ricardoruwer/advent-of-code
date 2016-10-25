@@ -17,8 +17,8 @@ class Circuit
       when 3
         value_l, operator, value_r = instruction.split.map(&:strip)
 
-        value_l = is_numeric?(value_l) ? value_l.to_i : @wires[value_l]
-        value_r = is_numeric?(value_r) ? value_r.to_i : @wires[value_r]
+        value_l = number?(value_l) ? value_l.to_i : @wires[value_l]
+        value_r = number?(value_r) ? value_r.to_i : @wires[value_r]
 
         if value_l && value_r
           case operator
@@ -50,14 +50,13 @@ class Circuit
     @circuits ||= @input.split("\n")
   end
 
-  def is_numeric?(value)
-    value.to_i.to_s == value
+  def number?(value)
+    value.match(/[0-9]+/)
   end
 
   def set_bitwise_direct(end_wire, instruction)
     unless @wires[end_wire]
-      @wires[end_wire] = instruction.to_i if is_numeric?(instruction)
-      @wires[end_wire] = @wires[instruction] if @wires[instruction]
+      @wires[end_wire] = number?(instruction)? instruction.to_i : @wires[instruction]
     end
   end
 
